@@ -12,9 +12,9 @@
     "seenAt": "2026-08-22"
   },
   "2026-09-11": {
-    "amount": 1381.29,
+    "amount": 1372.52,
     "currency": "EUR",
-    "airline": "Etihad Airways",
+    "airline": "Iberia",
     "seenAt": "2026-08-22"
   },
   "2026-09-12": {
@@ -36,15 +36,15 @@
     "seenAt": "2026-08-22"
   },
   "2026-09-25": {
-    "amount": 1255.52,
+    "amount": 1137.52,
     "currency": "EUR",
     "airline": "Iberia",
     "seenAt": "2026-08-22"
   },
   "2026-09-26": {
-    "amount": 1255.52,
+    "amount": 1111.43,
     "currency": "EUR",
-    "airline": "Iberia",
+    "airline": "Qatar Airways",
     "seenAt": "2026-08-22"
   }
 }
