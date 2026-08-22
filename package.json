@@ -1,0 +1,15 @@
+{
+  "name": "misurf",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "September Bali long-weekend flight deal agent (MAD -> DPS, 1 stop)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0",
+    "resend": "^4.0.0"
+  }
+}
