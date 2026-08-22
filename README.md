@@ -23,24 +23,24 @@ node index.js
 
 ## The trip pattern
 
-Every candidate uses only 5 vacation days (Mon-Fri) plus both surrounding
-weekends. Two outbound flavors per week:
+Every candidate uses only 5 vacation days (Mon-Fri) plus both full weekends
+at the destination:
 
-- **Friday night** — fly out Friday evening (after work), or
-- **Saturday morning** — fly out Saturday
+- **Out** — fly MAD → DPS Friday afternoon or later (a normal workday, so no
+  vacation time is spent getting there)
+- **Back** — fly DPS → MAD the following Saturday evening. The route is long
+  enough that this lands in Madrid on the **Sunday** (a "+1" day), so Sunday
+  is spent recovering at home instead of in transit, and Monday is a normal
+  workday.
 
-Either way, the return flight departs Bali the **following Saturday evening**
-(a redeye), landing back in Madrid Sunday morning — so Sunday is spent
-recovering at home instead of in transit, and Monday is a normal workday.
-
-`fetch.js` generates both outbound options for every Saturday in September
-2026 (Sep 5, 12, 19, 26) and searches Duffel for the cheapest one-stop fare
-that also matches the right time of day (Friday flights after 18:00, Saturday
-morning flights before 12:00, Bali departures at/after 17:00).
+`fetch.js` generates one candidate per Saturday in September 2026 (Sep 5, 12,
+19, 26 — paired with the Friday before and the Saturday a week after) and
+searches Duffel for the cheapest one-stop fare that also matches the right
+time of day (MAD departure at/after 14:00, DPS departure at/after 17:00).
 
 To change the month/year or the time windows, edit the constants at the top
-of `fetch.js` (`SEARCH_YEAR`, `SEARCH_MONTH`, `FRIDAY_NIGHT_MIN_HOUR`,
-`SATURDAY_MORNING_MAX_HOUR`, `SATURDAY_EVENING_MIN_HOUR`).
+of `fetch.js` (`SEARCH_YEAR`, `SEARCH_MONTH`, `FRIDAY_DEPARTURE_MIN_HOUR`,
+`SATURDAY_RETURN_MIN_HOUR`).
 
 ## Files
 
