@@ -9,7 +9,10 @@ const DEPART_DPS_COLOR = '#d9720c'; // departure day from Bali
 const FONT_STACK = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
 const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£' };
-const TRIP_PATTERN_LABEL = 'Fri afternoon out · Sat evening back (+1)';
+const OUTBOUND_STYLE_LABELS = {
+  'friday-evening': 'Fri evening out · following Sat back',
+  saturday: 'Sat out · following Sat back',
+};
 
 // Media queries only take effect from a <style> block, not inline styles,
 // so anything that needs to change on small screens (stacking the
@@ -59,7 +62,7 @@ function formatDeal(deal) {
                 </tr>
                 <tr>
                   <td style="font-family:${FONT_STACK};font-size:13px;color:${TEXT_GRAY};padding-bottom:12px;">
-                    ${TRIP_PATTERN_LABEL}
+                    ${OUTBOUND_STYLE_LABELS[deal.outboundStyle] ?? ''}
                   </td>
                 </tr>
                 <tr class="misurf-deal-row">
@@ -98,7 +101,7 @@ export function buildHtml(deals) {
         🏄 MISURF
       </div>
       <div style="font-family:${FONT_STACK};font-size:16px;color:${TEXT_GRAY};padding-top:4px;">
-        ${ORIGIN} &rarr; ${DESTINATION} · 5 vacation days, redeye home, 1 stop each way
+        ${ORIGIN} &rarr; ${DESTINATION} · 5 vacation days, 1 stop each way (≤3h layover)
       </div>
     </td>
   </tr>`;

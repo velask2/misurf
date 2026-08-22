@@ -17,7 +17,7 @@ you want to compare.
 ## The goal, restated
 
 A script that runs **automatically, once a day, with no laptop involved**:
-1. Builds one trip candidate per Saturday in September (fly out the Friday afternoon before, fly home the following Saturday evening, landing Sunday — 5 vacation days, 2 free weekends) and asks Duffel for the cheapest MAD→DPS fare with exactly one stop each way that matches those departure time windows
+1. Builds two trip candidates per Saturday in September (fly out the Friday evening before, or that Saturday — whichever is cheaper — fly home the following Saturday, 5 vacation days used) and asks Duffel for the cheapest MAD→DPS fare with exactly one stop each way and a layover no longer than 3 hours
 2. Compares today's prices to a running history file, so it knows what's actually a *good* price vs just a normal one
 3. Has Claude pick the best 3–5 deals and explain why in plain language
 4. Emails you that shortlist via Resend

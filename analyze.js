@@ -5,13 +5,12 @@ const MODEL = 'claude-haiku-4-5-20251001';
 function buildPrompt(fares, history) {
   return `You are helping pick the best flight deals for a MAD-DPS (Madrid to Bali) round trip.
 
-Every fare below is for the same trip pattern: fly out Friday afternoon (a
-normal workday, so no vacation time spent on it), and fly home the following
-Saturday evening, which lands back in Madrid on the Sunday (the route is
-long enough that the return is a "+1" day). That means the trip covers both
-full weekends at the destination while only costing 5 vacation days
-(Mon-Fri) -- so don't factor trip length into "value", just price. Every
-fare is also restricted to exactly one stop each way.
+Each fare below is for the same underlying trip -- out one weekend, back the
+following Saturday, 5 vacation days (Mon-Fri) used -- in one of two outbound
+flavors (see "outboundStyle"): "friday-evening" (departs MAD Friday evening)
+or "saturday" (departs MAD Saturday, any time). Don't factor outboundStyle
+into "value", just price. Every fare is also restricted to exactly one stop
+each way, with a layover no longer than 3 hours.
 
 Today's fares (lowest one-stop price found per Saturday departure date):
 ${JSON.stringify(fares, null, 2)}
@@ -28,6 +27,7 @@ Respond with ONLY a JSON array, no prose, no markdown fences. Each item:
 {
   "departureDate": "YYYY-MM-DD",
   "returnDate": "YYYY-MM-DD",
+  "outboundStyle": "friday-evening" | "saturday",
   "amount": number,
   "currency": "EUR",
   "airline": "string",

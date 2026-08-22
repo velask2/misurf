@@ -4,22 +4,20 @@ const DUFFEL_API_URL = 'https://api.duffel.com/air/offer_requests';
 export const ORIGIN = 'MAD';
 export const DESTINATION = 'DPS'; // Denpasar (Bali), Ngurah Rai Intl.
 
-// The trip pattern: fly out Friday afternoon (a normal workday, so it costs
-// no vacation time -- you just leave after work), work Mon-Fri the following
-// week, fly home the Saturday evening after that. The MAD-DPS route runs
-// long enough that a Saturday-evening departure from Bali lands in Madrid
-// on the Sunday (a "+1" day) -- so the trip gets both full weekends at the
-// destination (bar the Saturday evening spent flying home) while still only
-// using 5 vacation days (Mon-Fri).
+// The trip pattern: fly out either Friday evening or Saturday, work Mon-Fri
+// the following week, fly home the following Saturday -- whichever option
+// (and whichever airline/routing) is cheapest wins. Every itinerary is
+// restricted to exactly one stop each way, with a layover no longer than
+// MAX_CONNECTION_MINUTES.
 const SEARCH_YEAR = 2026;
 const SEARCH_MONTH = 9; // September
 const MAX_CONNECTIONS = 1; // exactly one stop each way, no direct, no 2-stop
+const MAX_CONNECTION_MINUTES = 180; // layover no longer than 3 hours, both ways
 
-// Local-time-of-day windows (24h, airport-local, matching Duffel's segment
-// departing_at format) that qualify as a "Friday afternoon" MAD departure
-// and a "Saturday evening" DPS departure.
-const FRIDAY_DEPARTURE_MIN_HOUR = 14; // MAD departure must be at/after 14:00
-const SATURDAY_RETURN_MIN_HOUR = 17; // DPS departure must be at/after 17:00
+// "Friday evening" MAD departure -- at/after this local hour. The Saturday
+// outbound option has no time-of-day restriction, and neither does the
+// Saturday return -- just cheapest, same 1-stop/layover rules.
+const FRIDAY_EVENING_MIN_HOUR = 18;
 
 function saturdaysInMonth(year, month) {
   const dates = [];
@@ -37,14 +35,27 @@ function addDays(dateStr, days) {
   return d.toISOString().slice(0, 10);
 }
 
-// One candidate per Saturday in the search month: depart the Friday
-// afternoon before it, return the following Saturday evening (8 days
-// later) -- both full weekends at the destination, 5 vacation days used.
+// Two outbound options per week: the Friday evening before the anchor
+// Saturday, or the anchor Saturday itself. Both return the following
+// Saturday (7-8 days later).
 function tripCandidates() {
-  return saturdaysInMonth(SEARCH_YEAR, SEARCH_MONTH).map((anchorSaturday) => ({
-    departureDate: addDays(anchorSaturday, -1),
-    returnDate: addDays(anchorSaturday, 7),
-  }));
+  const candidates = [];
+  for (const anchorSaturday of saturdaysInMonth(SEARCH_YEAR, SEARCH_MONTH)) {
+    const returnDate = addDays(anchorSaturday, 7);
+    candidates.push({
+      label: 'friday-evening',
+      departureDate: addDays(anchorSaturday, -1),
+      returnDate,
+      minDepartHour: FRIDAY_EVENING_MIN_HOUR,
+    });
+    candidates.push({
+      label: 'saturday',
+      departureDate: anchorSaturday,
+      returnDate,
+      minDepartHour: null,
+    });
+  }
+  return candidates;
 }
 
 async function requestOffers(departureDate, returnDate) {
@@ -85,15 +96,27 @@ function hasOneStopEachWay(offer) {
   return offer.slices.every((slice) => slice.segments.length === MAX_CONNECTIONS + 1);
 }
 
+// Layover length: time between landing on the first segment and taking off
+// on the second. Both timestamps are local to the connecting airport, so a
+// plain subtraction is safe even across a local midnight.
+function connectionMinutes(slice) {
+  const arrival = new Date(slice.segments[0].arriving_at);
+  const departure = new Date(slice.segments[1].departing_at);
+  return (departure - arrival) / 60000;
+}
+
+function hasShortConnections(offer) {
+  return offer.slices.every((slice) => connectionMinutes(slice) <= MAX_CONNECTION_MINUTES);
+}
+
 function departureHour(offer, sliceIndex) {
   const firstSegment = offer.slices[sliceIndex].segments[0];
   return Number(firstSegment.departing_at.slice(11, 13));
 }
 
-function meetsTimeWindow(offer) {
-  const outboundHour = departureHour(offer, 0);
-  const returnHour = departureHour(offer, 1);
-  return outboundHour >= FRIDAY_DEPARTURE_MIN_HOUR && returnHour >= SATURDAY_RETURN_MIN_HOUR;
+function meetsTimeWindow(offer, candidate) {
+  if (candidate.minDepartHour == null) return true;
+  return departureHour(offer, 0) >= candidate.minDepartHour;
 }
 
 function lowestFare(offers) {
@@ -116,17 +139,20 @@ export async function fetchFares() {
 
   const fares = [];
 
-  for (const { departureDate, returnDate } of tripCandidates()) {
+  for (const candidate of tripCandidates()) {
+    const { departureDate, returnDate, label } = candidate;
     try {
       const offers = await requestOffers(departureDate, returnDate);
-      const eligible = offers.filter((offer) => hasOneStopEachWay(offer) && meetsTimeWindow(offer));
+      const eligible = offers.filter(
+        (offer) => hasOneStopEachWay(offer) && hasShortConnections(offer) && meetsTimeWindow(offer, candidate),
+      );
       const cheapest = lowestFare(eligible);
       if (cheapest) {
-        fares.push({ departureDate, returnDate, ...cheapest });
+        fares.push({ departureDate, returnDate, outboundStyle: label, ...cheapest });
       } else if (offers.length > 0) {
-        console.warn(`No eligible (1-stop, right time of day) offers for ${departureDate} -> ${returnDate}`);
+        console.warn(`No eligible (1-stop, <=3h layover, right time of day) offers for ${departureDate} -> ${returnDate} [${label}]`);
       } else {
-        console.warn(`No offers found for ${departureDate} -> ${returnDate}`);
+        console.warn(`No offers found for ${departureDate} -> ${returnDate} [${label}]`);
       }
     } catch (err) {
       console.error(err.message);
