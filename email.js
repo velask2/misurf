@@ -9,6 +9,10 @@ const DEPART_DPS_COLOR = '#d9720c'; // departure day from Bali
 const FONT_STACK = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
 const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£' };
+const OUTBOUND_STYLE_LABELS = {
+  'friday-night': 'Fri night out · Sat evening back',
+  'saturday-morning': 'Sat morning out · Sat evening back',
+};
 
 // Media queries only take effect from a <style> block, not inline styles,
 // so anything that needs to change on small screens (stacking the
@@ -52,8 +56,13 @@ function formatDeal(deal) {
             <td class="misurf-card-pad" style="padding:32px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="font-family:${FONT_STACK};font-size:16px;color:#000000;padding-bottom:12px;">
+                  <td style="font-family:${FONT_STACK};font-size:16px;color:#000000;padding-bottom:4px;">
                     ${formatDateWithColoredDay(deal.departureDate, DEPART_MAD_COLOR)} &nbsp;&rarr;&nbsp; ${formatDateWithColoredDay(deal.returnDate, DEPART_DPS_COLOR)}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-family:${FONT_STACK};font-size:13px;color:${TEXT_GRAY};padding-bottom:12px;">
+                    ${OUTBOUND_STYLE_LABELS[deal.outboundStyle] ?? ''}
                   </td>
                 </tr>
                 <tr class="misurf-deal-row">
@@ -92,7 +101,7 @@ export function buildHtml(deals) {
         🏄 MISURF
       </div>
       <div style="font-family:${FONT_STACK};font-size:16px;color:${TEXT_GRAY};padding-top:4px;">
-        ${ORIGIN} &rarr; ${DESTINATION} · 9 days, 5 vacation days, 1 stop each way
+        ${ORIGIN} &rarr; ${DESTINATION} · 5 vacation days, redeye home, 1 stop each way
       </div>
     </td>
   </tr>`;

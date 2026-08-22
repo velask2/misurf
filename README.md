@@ -1,11 +1,12 @@
 # misurf
 
 A daily agent that checks MAD → DPS (Bali) round-trip fares via Duffel, for
-the "5 vacation days, 2 free weekends" trip pattern in September: depart on
-a Saturday, return the Sunday 8 nights later, exactly one stop each way. It
-compares fares against a running price history, has Claude pick the 3-5 best
-deals, and emails the shortlist via Resend. Runs on a schedule via GitHub
-Actions — nothing books anything, it's read-only search and notify.
+the "5 vacation days, 2 free weekends" trip pattern in September: fly out
+Friday night or Saturday morning, fly home the following Saturday evening on
+a redeye that lands back in Madrid Sunday morning — exactly one stop each
+way. It compares fares against a running price history, has Claude pick the
+3-5 best deals, and emails the shortlist via Resend. Runs on a schedule via
+GitHub Actions — nothing books anything, it's read-only search and notify.
 
 See [SETUP.md](SETUP.md) for the full setup guide.
 
@@ -22,14 +23,24 @@ node index.js
 
 ## The trip pattern
 
-Every candidate is a 9-day trip: fly out Saturday, take the following Mon-Fri
-off (5 vacation days), fly back the Sunday after that — both surrounding
-weekends are "free" days off. `fetch.js` generates one candidate per Saturday
-in September 2026 (Sep 5, 12, 19, 26) and searches Duffel for the cheapest
-one-stop-each-way fare for that exact departure/return pair.
+Every candidate uses only 5 vacation days (Mon-Fri) plus both surrounding
+weekends. Two outbound flavors per week:
 
-To change the month/year or the number of vacation days, edit the constants
-at the top of `fetch.js` (`SEARCH_YEAR`, `SEARCH_MONTH`, `TRIP_NIGHTS`).
+- **Friday night** — fly out Friday evening (after work), or
+- **Saturday morning** — fly out Saturday
+
+Either way, the return flight departs Bali the **following Saturday evening**
+(a redeye), landing back in Madrid Sunday morning — so Sunday is spent
+recovering at home instead of in transit, and Monday is a normal workday.
+
+`fetch.js` generates both outbound options for every Saturday in September
+2026 (Sep 5, 12, 19, 26) and searches Duffel for the cheapest one-stop fare
+that also matches the right time of day (Friday flights after 18:00, Saturday
+morning flights before 12:00, Bali departures at/after 17:00).
+
+To change the month/year or the time windows, edit the constants at the top
+of `fetch.js` (`SEARCH_YEAR`, `SEARCH_MONTH`, `FRIDAY_NIGHT_MIN_HOUR`,
+`SATURDAY_MORNING_MAX_HOUR`, `SATURDAY_EVENING_MIN_HOUR`).
 
 ## Files
 
