@@ -1,1 +1,50 @@
-{}
+{
+  "2026-09-04": {
+    "amount": 1670.65,
+    "currency": "EUR",
+    "airline": "Qatar Airways",
+    "seenAt": "2026-08-22"
+  },
+  "2026-09-05": {
+    "amount": 887.43,
+    "currency": "EUR",
+    "airline": "China Eastern Airlines",
+    "seenAt": "2026-08-22"
+  },
+  "2026-09-11": {
+    "amount": 1381.29,
+    "currency": "EUR",
+    "airline": "Etihad Airways",
+    "seenAt": "2026-08-22"
+  },
+  "2026-09-12": {
+    "amount": 1212.56,
+    "currency": "EUR",
+    "airline": "China Eastern Airlines",
+    "seenAt": "2026-08-22"
+  },
+  "2026-09-18": {
+    "amount": 1371.52,
+    "currency": "EUR",
+    "airline": "Iberia",
+    "seenAt": "2026-08-22"
+  },
+  "2026-09-19": {
+    "amount": 952.46,
+    "currency": "EUR",
+    "airline": "China Eastern Airlines",
+    "seenAt": "2026-08-22"
+  },
+  "2026-09-25": {
+    "amount": 1255.52,
+    "currency": "EUR",
+    "airline": "Iberia",
+    "seenAt": "2026-08-22"
+  },
+  "2026-09-26": {
+    "amount": 1255.52,
+    "currency": "EUR",
+    "airline": "Iberia",
+    "seenAt": "2026-08-22"
+  }
+}
